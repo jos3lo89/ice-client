@@ -1,6 +1,6 @@
 import { authApi } from "@/api/endpoints/auth.api";
 import { useAuthStore } from "@/stores/authStore";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -18,8 +18,7 @@ const getRoleBasedRedirect = (role: string): string => {
 
 export const useAuth = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { setUser, setIsAuthenticated, logout: clearAuth } = useAuthStore();
+  const { setUser, setIsAuthenticated } = useAuthStore();
 
   const login = useMutation({
     mutationFn: authApi.login,
