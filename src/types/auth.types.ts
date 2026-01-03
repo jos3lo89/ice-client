@@ -1,3 +1,5 @@
+import type { Roles } from "@/enums/roles.enum";
+
 // login
 export interface LoginRequest {
   username: string;
@@ -18,7 +20,7 @@ export interface User {
   id: string;
   name: string;
   userName: string;
-  role: string;
+  role: Roles;
   dni: string;
 }
 
@@ -58,7 +60,7 @@ export interface User {
   id: string;
   name: string;
   userName: string;
-  role: string;
+  role: Roles;
   dni: string;
 }
 
@@ -92,5 +94,5 @@ export interface ChangePasswordRequest {
 export interface ChangePasswordResponse {
   success: boolean;
   message: string;
-  data: any;
+  data: null;
 }

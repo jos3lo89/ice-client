@@ -1,24 +1,15 @@
 import { authApi } from "@/api/endpoints/auth.api";
 import { useAuthStore } from "@/stores/authStore";
-import { useMutation } from "@tanstack/react-query";
+import { getRoleBasedRedirect } from "@/utils/roleBaseRedirect";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const getRoleBasedRedirect = (role: string): string => {
-  const redirectMap: Record<string, string> = {
-    ADMIN: "/",
-    CAJERO: "/cash-register",
-    MESERO: "/tables",
-    BARTENDER: "/bar",
-    COCINERO: "/kitchen",
-  };
-  return redirectMap[role] || "/";
-};
-
 export const useAuth = () => {
   const navigate = useNavigate();
-  const { setUser, setIsAuthenticated } = useAuthStore();
+  const queryClient = useQueryClient();
+  const { setUser, setIsAuthenticated, logout: clearAuth } = useAuthStore();
 
   const login = useMutation({
     mutationFn: authApi.login,
@@ -42,19 +33,46 @@ export const useAuth = () => {
     },
   });
 
-  const logout = () => {
-    return useMutation({
-      mutationFn: authApi.logout,
-      onSuccess: (data) => {
-        console.log("success", data);
-        toast.success("Logout successfully");
-      },
-      onError: (error) => {
-        console.log("error", error);
-        toast.error("Logout failed");
-      },
-    });
-  };
+  const loginWithPin = useMutation({
+    mutationFn: authApi.loginWithPin,
+    onSuccess: (response) => {
+      if (response.success && response.data.user) {
+        setUser(response.data.user);
+        setIsAuthenticated(true);
+        toast.success("¡Acceso concedido!", {
+          description: `Hola ${response.data.user.name}`,
+        });
+
+        const redirectPath = getRoleBasedRedirect(response.data.user.role);
+        navigate(redirectPath, { replace: true });
+      }
+    },
+    onError: (error: AxiosError<{ message?: string }>) => {
+      toast.error("PIN incorrecto", {
+        description:
+          error.response?.data?.message ||
+          "Verifica tu PIN e intenta nuevamente",
+      });
+    },
+  });
+
+  const logout = useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      clearAuth();
+      queryClient.clear();
+      toast.success("Sesión cerrada", {
+        description: "Hasta pronto",
+      });
+      navigate("/login", { replace: true });
+    },
+    onError: () => {
+      clearAuth();
+      queryClient.clear();
+      navigate("/login", { replace: true });
+      toast.error("Error al cerrar sesión");
+    },
+  });
 
   const changePassword = () => {
     return useMutation({
@@ -84,28 +102,6 @@ export const useAuth = () => {
     });
   };
 
-  const loginWithPin = useMutation({
-    mutationFn: authApi.loginWithPin,
-    onSuccess: (response) => {
-      if (response.success && response.data.user) {
-        setUser(response.data.user);
-        setIsAuthenticated(true);
-        toast.success("¡Acceso concedido!", {
-          description: `Hola ${response.data.user.name}`,
-        });
-
-        const redirectPath = getRoleBasedRedirect(response.data.user.role);
-        navigate(redirectPath, { replace: true });
-      }
-    },
-    onError: (error: AxiosError<{ message?: string }>) => {
-      toast.error("PIN incorrecto", {
-        description:
-          error.response?.data?.message ||
-          "Verifica tu PIN e intenta nuevamente",
-      });
-    },
-  });
   const refreshToken = () => {
     return useMutation({
       mutationFn: authApi.refreshToken,
