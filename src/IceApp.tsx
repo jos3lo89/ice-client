@@ -13,7 +13,7 @@ const IceApp = () => {
         <RouterProvider router={routes} />
         <ReactQueryDevtools
           initialIsOpen={false}
-          buttonPosition="bottom-left"
+          buttonPosition="bottom-right"
         />
         <Toaster closeButton richColors position="top-center" />
       </QueryClientProvider>
