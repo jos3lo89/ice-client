@@ -42,7 +42,7 @@ export default function OrderActions({
   const [cancelReason, setCancelReason] = useState("");
 
   const pendingItems = order.order_items.filter(
-    (item) => item.status === OrderItemStatus.PENDIENTE && !item.is_cancelled,
+    (item) => item.status === OrderItemStatus.PENDIENTE && !item.is_cancelled
   );
 
   const allItemsDelivered = order.order_items
@@ -91,7 +91,7 @@ export default function OrderActions({
             ) : (
               <>
                 <Send className="mr-2 h-4 w-4" />
-                Enviar a Cocina ({pendingItems.length})
+                Enviar a Pedido ({pendingItems.length})
               </>
             )}
           </Button>

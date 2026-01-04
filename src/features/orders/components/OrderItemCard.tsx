@@ -57,8 +57,6 @@ export default function OrderItemCard({
 }: OrderItemCardProps) {
   const statusConfig = getStatusConfig(item.status);
 
-  console.log(item);
-
   const variants: VariantSelection[] = useMemo(() => {
     if (!item.variants_snapshot) return [];
     try {
