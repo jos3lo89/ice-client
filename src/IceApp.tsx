@@ -5,7 +5,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "sonner";
 import { routes } from "./routes/routes";
 import { ThemeProvider } from "./components/theme/theme-provider";
-import EnvDebug from "./components/EnvDebug";
 
 const IceApp = () => {
   return (
@@ -18,7 +17,6 @@ const IceApp = () => {
         />
         <Toaster closeButton richColors position="top-center" />
       </QueryClientProvider>
-      <EnvDebug />
     </ThemeProvider>
   );
 };

@@ -25,7 +25,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useProducts } from "@/hooks/useProducts";
 import CategorySheet from "../components/CategorySheet";
-
 export default function OrderPage() {
   const navigate = useNavigate();
   const { orderId, tableId } = useParams();
@@ -38,7 +37,7 @@ export default function OrderPage() {
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [itemToCancel, setItemToCancel] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState("");
-  const [dinersCount, setDinersCount] = useState(1);
+  const [dinersCount, setDinersCount] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
   const [openFilter, setOpenFilter] = useState(false);
@@ -97,21 +96,22 @@ export default function OrderPage() {
       return;
     }
 
-    if (dinersCount < 1) {
-      toast.error("Por favor, indique el número de comensales");
+    const count = Number(dinersCount);
+    if (!dinersCount || count < 1) {
+      toast.error("Por favor, indique un número válido de comensales");
       return;
     }
 
     createOrder.mutate(
       {
         table_id: tableId,
-        diners_count: dinersCount,
+        diners_count: count,
       },
       {
         onSuccess: (data) => {
           navigate(`/orders/${data.data.id}`, { replace: true });
         },
-      },
+      }
     );
   };
 
@@ -124,10 +124,18 @@ export default function OrderPage() {
           </span>
           <div className="flex items-center gap-2">
             <Input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={dinersCount}
-              onChange={(e) => setDinersCount(Number(e.target.value))}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || /^[0-9]+$/.test(value)) {
+                  setDinersCount(value);
+                }
+              }}
               className="mt-4"
+              placeholder="999"
               disabled={createOrder.isPending}
             />
             <Button
@@ -146,7 +154,6 @@ export default function OrderPage() {
   const products = listProductsQry.data?.data || [];
   const categories = listCategoriesQuery.data?.data || [];
 
-  // filtrar productos
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
       selectedCategoryId === "ALL" ||
@@ -157,7 +164,6 @@ export default function OrderPage() {
     return matchesCategory && matchesSearch;
   });
 
-  // Handlers
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
     setShowAddDialog(true);
@@ -168,7 +174,7 @@ export default function OrderPage() {
     quantity: number,
     // variants?: VariantSelection[],
     variants?: string,
-    notes?: string,
+    notes?: string
   ) => {
     const variantsArray = variants ? JSON.parse(variants) : [];
 
@@ -187,7 +193,7 @@ export default function OrderPage() {
     const pendingItemIds = order.order_items
       .filter(
         (item) =>
-          item.status === OrderItemStatus.PENDIENTE && !item.is_cancelled,
+          item.status === OrderItemStatus.PENDIENTE && !item.is_cancelled
       )
       .map((item) => item.id);
 
@@ -212,7 +218,7 @@ export default function OrderPage() {
         onSuccess: () => {
           navigate("/tables");
         },
-      },
+      }
     );
   };
 
@@ -226,7 +232,7 @@ export default function OrderPage() {
         onSuccess: () => {
           navigate("/tables");
         },
-      },
+      }
     );
   };
 
@@ -244,7 +250,7 @@ export default function OrderPage() {
             setShowDeleteDialog(false);
             setItemToDelete(null);
           },
-        },
+        }
       );
     }
   };
@@ -268,7 +274,7 @@ export default function OrderPage() {
             setItemToCancel(null);
             setCancelReason("");
           },
-        },
+        }
       );
     }
   };
