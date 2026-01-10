@@ -8,30 +8,24 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, TrendingUp, TrendingDown } from "lucide-react";
+import {  TrendingUp, TrendingDown } from "lucide-react";
 import { CashMovementType } from "@/types/cash-registers.types";
 import { useCashRegisters } from "@/hooks/useCashRegisters";
 import { formatDateTime } from "@/utils/formatDateTime";
+import LoadingRequest from "@/components/LoadingRequest";
+import EmptyStateAlert from "@/components/EmptyStateAlert";
 
 export default function CashMovementsList() {
   const { currentMovementsQuery } = useCashRegisters();
 
   if (currentMovementsQuery.isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-6 w-6 animate-spin" />
-      </div>
-    );
+    return <LoadingRequest />;
   }
 
   const movements = currentMovementsQuery.data?.data || [];
 
   if (movements.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No hay movimientos registrados
-      </div>
-    );
+    return <EmptyStateAlert />;
   }
 
   return (

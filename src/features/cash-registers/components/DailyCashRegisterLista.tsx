@@ -8,10 +8,12 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2 } from "lucide-react";
 import { useCashRegisters } from "@/hooks/useCashRegisters";
 import { CashRegisterStatus } from "@/types/cash-registers.types";
 import { formatDateTime } from "@/utils/formatDateTime";
+import LoadingRequest from "@/components/LoadingRequest";
+import ErrorRequestAlert from "@/components/ErrorRequestAlert";
+import EmptyStateAlert from "@/components/EmptyStateAlert";
 
 const DailyCashRegisterLista = () => {
   const { todayCashRegistersQuery } = useCashRegisters();
@@ -23,27 +25,15 @@ const DailyCashRegisterLista = () => {
   });
 
   if (todayCashRegistersQuery.isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-6 w-6 animate-spin" />
-      </div>
-    );
+    return <LoadingRequest />;
   }
 
   if (todayCashRegistersQuery.error) {
-    return (
-      <div className="text-center py-8 text-red-600">
-        Error al cargar las cajas del día
-      </div>
-    );
+    return <ErrorRequestAlert />;
   }
 
   if (cashRegisters.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No hay cajas registradas hoy
-      </div>
-    );
+    return <EmptyStateAlert />;
   }
 
   const formatCurrency = (amount: number | undefined | null) =>

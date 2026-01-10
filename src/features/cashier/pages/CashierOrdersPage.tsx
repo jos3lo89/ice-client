@@ -17,8 +17,6 @@ import { OrderStatus } from "@/types/orders.types";
 import ProcessPaymentDialog from "@/features/payments/components/ProcessPaymentDialog";
 import SplitPaymentDialog from "@/features/payments/components/SplitPaymentDialog";
 import type { OrderListItem } from "@/types/orders.types";
-import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
 import { useOrders } from "@/hooks/useOrders";
 import { useCashRegisters } from "@/hooks/useCashRegisters";
 import IncrementalPaymentDialog from "@/features/payments/components/IncrementalPaymentDialog";
@@ -35,6 +33,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { formatDistanceTime } from "@/utils/formatDistanceTime";
 
 export default function CashierOrdersPage() {
   const { listActiveOrdersQuery, cancelOrder } = useOrders();
@@ -226,10 +225,7 @@ export default function CashierOrdersPage() {
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     <span>
-                      {formatDistanceToNow(new Date(order.created_at), {
-                        addSuffix: true,
-                        locale: es,
-                      })}
+                      {formatDistanceTime(order.created_at)}
                     </span>
                   </div>
 

@@ -8,19 +8,16 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, FileText, Receipt, FileCheck } from "lucide-react";
+import {  FileText, Receipt, FileCheck } from "lucide-react";
 import { useCashRegisters } from "@/hooks/useCashRegisters";
 import { formatDateTime } from "@/utils/formatDateTime";
+import LoadingRequest from "@/components/LoadingRequest";
 
 export default function SalesList() {
   const { currentSalesQuery } = useCashRegisters();
 
   if (currentSalesQuery.isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-6 w-6 animate-spin" />
-      </div>
-    );
+    return <LoadingRequest />;
   }
 
   const sales = currentSalesQuery.data?.data || [];

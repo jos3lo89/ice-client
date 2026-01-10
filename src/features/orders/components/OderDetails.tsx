@@ -36,7 +36,8 @@ import {
 import { OrderStatus, OrderItemStatus } from "@/types/orders.types";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceTime } from "@/utils/formatDistanceTime";
+import { formatDateTime } from "@/utils/formatDateTime";
 
 interface OrderDetailsDialogProps {
   id: string;
@@ -179,12 +180,12 @@ export default function OrderDetailsDialog({
                 Orden #{data.daily_number}
               </DialogTitle>
               <DialogDescription className="mt-1">
-                {format(new Date(data.created_at), "PPP", { locale: es })}
+                {formatDateTime(data.created_at, "date")}
               </DialogDescription>
             </div>
             <Badge
               variant={statusConfig.variant}
-              className={statusConfig.className}
+              className={`${statusConfig.className} mr-4`}
             >
               {statusConfig.label}
             </Badge>
@@ -216,9 +217,6 @@ export default function OrderDetailsDialog({
                     <p className="text-sm text-muted-foreground">
                       {data.table.floor_name}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      Capacidad: {data.table.capacity} personas
-                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -242,9 +240,7 @@ export default function OrderDetailsDialog({
                       <Clock className="h-3 w-3" />
                       <span>
                         Hace{" "}
-                        {formatDistanceToNow(new Date(data.created_at), {
-                          locale: es,
-                        })}
+                        {formatDistanceTime(data.created_at)}
                       </span>
                     </div>
                   </div>
@@ -373,10 +369,7 @@ export default function OrderDetailsDialog({
                               <div className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
                                 Enviado{" "}
-                                {formatDistanceToNow(
-                                  new Date(item.sent_to_kitchen_at),
-                                  { locale: es, addSuffix: true }
-                                )}
+                                {formatDistanceTime(item.sent_to_kitchen_at)}
                               </div>
                             )}
 
@@ -489,9 +482,7 @@ export default function OrderDetailsDialog({
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tiempo abierto:</span>
                   <span>
-                    {formatDistanceToNow(new Date(data.created_at), {
-                      locale: es,
-                    })}
+                    {formatDistanceTime(data.created_at)}
                   </span>
                 </div>
               </CardContent>

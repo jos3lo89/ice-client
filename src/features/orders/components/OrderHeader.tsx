@@ -4,8 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Users, Clock, User } from "lucide-react";
 import { OrderStatus } from "@/types/orders.types";
 import type { Order } from "@/types/orders.types";
-import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatDistanceTime } from "@/utils/formatDistanceTime";
 
 interface OrderHeaderProps {
   order: Order;
@@ -93,10 +92,7 @@ export default function OrderHeader({ order }: OrderHeaderProps) {
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock className="h-4 w-4" />
               <span>
-                {formatDistanceToNow(new Date(order.created_at), {
-                  addSuffix: true,
-                  locale: es,
-                })}
+                {formatDistanceTime(order.created_at)}
               </span>
             </div>
           </div>

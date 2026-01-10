@@ -2,10 +2,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
 import { TableStatus } from "@/types/table.types";
-import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
 import TableStatusBadge from "./TableStatusBadge";
 import type { Table } from "@/types/floor.type";
+import { formatDistanceTime } from "@/utils/formatDistanceTime";
 
 interface TableCardProps {
   table: Table;
@@ -48,10 +47,7 @@ export default function TableCard({ table, onClick }: TableCardProps) {
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
               <span>
-                {formatDistanceToNow(new Date(activeOrder.created_at), {
-                  addSuffix: true,
-                  locale: es,
-                })}
+                {formatDistanceTime(activeOrder.created_at)}
               </span>
             </div>
 

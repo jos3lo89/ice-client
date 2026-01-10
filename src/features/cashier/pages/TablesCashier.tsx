@@ -20,10 +20,9 @@ import TableStatusBadge from "@/features/tables/components/TableStatusBadge";
 import { useFloors } from "@/hooks/useFloors";
 import { useOrders } from "@/hooks/useOrders";
 import { TableStatus } from "@/types/floor.type";
-import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
 import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
+import { formatDistanceTime } from "@/utils/formatDistanceTime";
 
 const TablesCashier = () => {
   const [selectedFloorId, setSelectedFloorId] = useState<string>("");
@@ -153,13 +152,7 @@ const TablesCashier = () => {
                               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <Clock className="h-3 w-3" />
                                 <span>
-                                  {formatDistanceToNow(
-                                    new Date(activeOrder.created_at),
-                                    {
-                                      addSuffix: true,
-                                      locale: es,
-                                    }
-                                  )}
+                                  {formatDistanceTime(activeOrder.created_at)}
                                 </span>
                               </div>
 

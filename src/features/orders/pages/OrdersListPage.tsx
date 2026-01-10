@@ -1,4 +1,4 @@
-import { Loader2, Receipt } from "lucide-react";
+import {  Receipt } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import {
@@ -13,12 +13,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { OrderStatus, type OrderListItem } from "@/types/orders.types";
-import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
 import { useOrders } from "@/hooks/useOrders";
 import { useState } from "react";
 import CloseOrderDialog from "../components/CloseOrderDialog";
 import OderDetails from "../components/OderDetails";
+import { formatSoles } from "@/utils/formatearSoles";
+import { formatDistanceTime } from "@/utils/formatDistanceTime";
+import LoadingRequest from "@/components/LoadingRequest";
+import ErrorRequestAlert from "@/components/ErrorRequestAlert";
+import EmptyStateAlert from "@/components/EmptyStateAlert";
 
 const getStatusBadge = (status: OrderStatus) => {
   const config = {
@@ -68,43 +71,17 @@ export default function OrdersListPage() {
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
 
   if (myOrdersQuery.isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-          <p className="mt-2 text-sm text-muted-foreground">
-            Cargando órdenes...
-          </p>
-        </div>
-      </div>
-    );
+    return <LoadingRequest />
   }
 
   if (myOrdersQuery.isError) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          Error al cargar órdenes. Intenta nuevamente.
-        </AlertDescription>
-      </Alert>
-    );
+    return <ErrorRequestAlert />;
   }
 
   const orders = myOrdersQuery.data?.data || [];
 
   if (orders.length === 0) {
-    return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-bold">Mis Órdenes</h1>
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            No tienes órdenes activas en este momento
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
+    return <EmptyStateAlert />;
   }
 
   const handleCloseOrder = (order: OrderListItem) => {
@@ -163,12 +140,7 @@ export default function OrdersListPage() {
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">Mesa {order.table_number}</p>
-                        {order.table_name && (
-                          <p className="text-xs text-muted-foreground">
-                            {order.table_name}
-                          </p>
-                        )}
+                        <p className="font-medium">{order.table_name}</p>
                         <p className="text-xs text-muted-foreground">
                           {order.floor_name}
                         </p>
@@ -185,13 +157,10 @@ export default function OrdersListPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      S/ {order.subtotal.toFixed(2)}
+                      {formatSoles(order.subtotal)}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {formatDistanceToNow(new Date(order.created_at), {
-                        addSuffix: true,
-                        locale: es,
-                      })}
+                      {formatDistanceTime(order.created_at)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

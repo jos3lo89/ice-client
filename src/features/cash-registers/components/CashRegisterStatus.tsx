@@ -1,21 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, DollarSign, Clock } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
 import { useCashRegisters } from "@/hooks/useCashRegisters";
+import { formatDistanceTime } from "@/utils/formatDistanceTime";
+import LoadingRequest from "@/components/LoadingRequest";
 
 export default function CashRegisterStatus() {
   const { currentCashRegisterQuery } = useCashRegisters();
 
   if (currentCashRegisterQuery.isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center p-6">
-          <Loader2 className="h-6 w-6 animate-spin" />
-        </CardContent>
-      </Card>
-    );
+    return <LoadingRequest />;
   }
 
   const cashRegister = currentCashRegisterQuery.data?.data;
@@ -48,9 +42,7 @@ export default function CashRegisterStatus() {
           <Clock className="h-4 w-4" />
           <span>
             Abierta hace{" "}
-            {formatDistanceToNow(new Date(cashRegister.open_time), {
-              locale: es,
-            })}
+            {formatDistanceTime(cashRegister.open_time)}
           </span>
         </div>
 
