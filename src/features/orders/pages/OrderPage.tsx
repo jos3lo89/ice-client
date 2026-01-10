@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useProducts } from "@/hooks/useProducts";
 import CategorySheet from "../components/CategorySheet";
+import { formatDateTime } from "@/utils/formatDateTime";
 export default function OrderPage() {
   const navigate = useNavigate();
   const { orderId, tableId } = useParams();
@@ -37,7 +38,6 @@ export default function OrderPage() {
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [itemToCancel, setItemToCancel] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState("");
-  const [dinersCount, setDinersCount] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
   const [openFilter, setOpenFilter] = useState(false);
@@ -45,11 +45,8 @@ export default function OrderPage() {
   const {
     useOrderById,
     useOrderByTable,
-    createOrder,
     addItem,
     sendToKitchen,
-    closeOrder,
-    cancelOrder,
     deleteItem,
     cancelItem,
   } = useOrders();
@@ -70,82 +67,23 @@ export default function OrderPage() {
     ? orderByTableQuery.data?.data
     : orderByIdQuery.data?.data;
 
-  // Obtener categoría seleccionada
-
-  // Loading states
-  if (
-    createOrder.isPending ||
-    orderByIdQuery.isLoading ||
-    orderByTableQuery.isLoading
-  ) {
+  if (orderByIdQuery.isLoading || orderByTableQuery.isLoading) {
     return (
       <div className="flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-          <p className="mt-2 text-sm text-muted-foreground">
-            {createOrder.isPending ? "Creando orden..." : "Cargando orden..."}
-          </p>
         </div>
       </div>
     );
   }
-
-  const handleCreateOrder = () => {
-    if (!tableId) {
-      toast.error("Por favor, seleccione una mesa");
-      return;
-    }
-
-    const count = Number(dinersCount);
-    if (!dinersCount || count < 1) {
-      toast.error("Por favor, indique un número válido de comensales");
-      return;
-    }
-
-    createOrder.mutate(
-      {
-        table_id: tableId,
-        diners_count: count,
-      },
-      {
-        onSuccess: (data) => {
-          navigate(`/orders/${data.data.id}`, { replace: true });
-        },
-      }
-    );
-  };
 
   if (!order) {
     return (
       <div className="flex items-center justify-center">
         <div className="text-center">
           <span className="text-sm text-muted-foreground">
-            Por favor, indique el número de comensales
+            No tiene una orden arctiva para esta mesa
           </span>
-          <div className="flex items-center gap-2">
-            <Input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={dinersCount}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "" || /^[0-9]+$/.test(value)) {
-                  setDinersCount(value);
-                }
-              }}
-              className="mt-4"
-              placeholder="999"
-              disabled={createOrder.isPending}
-            />
-            <Button
-              onClick={handleCreateOrder}
-              className="mt-4"
-              disabled={createOrder.isPending}
-            >
-              {createOrder.isPending ? "Creando orden..." : "Crear orden"}
-            </Button>
-          </div>
         </div>
       </div>
     );
@@ -172,7 +110,6 @@ export default function OrderPage() {
   const handleAddItem = (
     productId: string,
     quantity: number,
-    // variants?: VariantSelection[],
     variants?: string,
     notes?: string
   ) => {
@@ -202,38 +139,12 @@ export default function OrderPage() {
       return;
     }
 
+    console.log(pendingItemIds);
+
     sendToKitchen.mutate({
       order_id: order.id,
       item_ids: pendingItemIds,
     });
-  };
-
-  const handleCloseOrder = (notes?: string) => {
-    closeOrder.mutate(
-      {
-        id: order.id,
-        values: notes ? { notes } : undefined,
-      },
-      {
-        onSuccess: () => {
-          navigate("/tables");
-        },
-      }
-    );
-  };
-
-  const handleCancelOrder = (reason: string) => {
-    cancelOrder.mutate(
-      {
-        id: order.id,
-        values: { reason },
-      },
-      {
-        onSuccess: () => {
-          navigate("/tables");
-        },
-      }
-    );
   };
 
   const handleDeleteItem = (itemId: string) => {
@@ -282,7 +193,6 @@ export default function OrderPage() {
   return (
     <>
       <div className="space-y-4">
-        {/* Header minimalista */}
         <div className="flex items-center justify-between">
           <Button
             variant="ghost"
@@ -294,39 +204,41 @@ export default function OrderPage() {
           </Button>
 
           <div className="text-center">
-            <h2 className="text-lg font-bold">Orden #{order.daily_number}</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-sm font-bold">Orden #{order.daily_number}</h2>
+            <p className="text-xs text-muted-foreground">
               Mesa {order.table.number} - {order.table.floor_name}
             </p>
+            <p className="text-xs text-muted-foreground">
+              Hora: {formatDateTime(order.created_at, "time")}
+            </p>
           </div>
-          <Button
-            onClick={() => setSelectedCategoryId("ALL")}
-            className="cursor-pointer"
-            variant="outline"
-          >
-            Todos
-          </Button>
-          <CategorySheet
-            open={openFilter}
-            onOpenChange={setOpenFilter}
-            selectedCategoryId={selectedCategoryId}
-            onSelectCategory={setSelectedCategoryId}
-            categories={categories}
-          />
 
-          <OrderSummarySheet
-            open={showSummarySheet}
-            onOpenChange={setShowSummarySheet}
-            order={order}
-            onDeleteItem={handleDeleteItem}
-            onCancelItem={handleCancelItem}
-            onSendToKitchen={handleSendToKitchen}
-            onCloseOrder={handleCloseOrder}
-            onCancelOrder={handleCancelOrder}
-            isSending={sendToKitchen.isPending}
-            isClosing={closeOrder.isPending}
-            isCancelling={cancelOrder.isPending}
-          />
+          <div className="flex gap-3 items-center">
+            <Button
+              onClick={() => setSelectedCategoryId("ALL")}
+              className="cursor-pointer"
+              variant="outline"
+            >
+              Todos
+            </Button>
+            <CategorySheet
+              open={openFilter}
+              onOpenChange={setOpenFilter}
+              selectedCategoryId={selectedCategoryId}
+              onSelectCategory={setSelectedCategoryId}
+              categories={categories}
+            />
+
+            <OrderSummarySheet
+              open={showSummarySheet}
+              onOpenChange={setShowSummarySheet}
+              order={order}
+              onDeleteItem={handleDeleteItem}
+              onCancelItem={handleCancelItem}
+              onSendToKitchen={handleSendToKitchen}
+              isSending={sendToKitchen.isPending}
+            />
+          </div>
         </div>
         <div className="relative mb-6">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />

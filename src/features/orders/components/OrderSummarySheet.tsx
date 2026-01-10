@@ -1,4 +1,3 @@
-// src/features/orders/components/OrderSummarySheet.tsx
 import {
   Sheet,
   SheetContent,
@@ -23,11 +22,7 @@ interface OrderSummarySheetProps {
   onDeleteItem?: (itemId: string) => void;
   onCancelItem?: (itemId: string) => void;
   onSendToKitchen: () => void;
-  onCloseOrder: (notes?: string) => void;
-  onCancelOrder: (reason: string) => void;
   isSending?: boolean;
-  isClosing?: boolean;
-  isCancelling?: boolean;
 }
 
 const OrderSummarySheet = ({
@@ -37,20 +32,16 @@ const OrderSummarySheet = ({
   onDeleteItem,
   onCancelItem,
   onSendToKitchen,
-  onCloseOrder,
-  onCancelOrder,
   isSending,
-  isClosing,
-  isCancelling,
 }: OrderSummarySheetProps) => {
   const activeItemsCount = order.order_items.filter(
-    (item) => !item.is_cancelled,
+    (item) => !item.is_cancelled
   ).length;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="outline" size="icon" className="relative">
           <ShoppingCart className="h-5 w-5" />
           {activeItemsCount > 0 && (
             <Badge
@@ -131,11 +122,7 @@ const OrderSummarySheet = ({
           <OrderActions
             order={order}
             onSendToKitchen={onSendToKitchen}
-            onCloseOrder={onCloseOrder}
-            onCancelOrder={onCancelOrder}
             isSending={isSending}
-            isClosing={isClosing}
-            isCancelling={isCancelling}
           />
         </div>
       </SheetContent>

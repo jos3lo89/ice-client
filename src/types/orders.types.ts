@@ -10,6 +10,7 @@ export const OrderStatus = {
   PARCIALMENTE_PAGADA: "PARCIALMENTE_PAGADA",
   PAGADA: "PAGADA",
   CANCELADA: "CANCELADA",
+  EN_PAGO_DIVIDIDO: "EN_PAGO_DIVIDIDO",
 } as const;
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
@@ -61,6 +62,7 @@ export interface OrderItem {
   is_cancelled: boolean;
   is_paid: boolean;
   created_at: string;
+  // TODO: ver aqui piner un enum
   sent_to_kitchen_at?: string;
   printed_at?: string;
   cancelled_at?: string;
@@ -74,7 +76,7 @@ export interface Order {
   table: {
     id: string;
     number: number;
-    name?: string;
+    name: string;
     capacity: number;
     floor_name: string;
   };
@@ -101,7 +103,7 @@ export interface OrderListItem {
   daily_number: number;
   order_date: string;
   table_number: number;
-  table_name?: string;
+  table_name: string;
   floor_name: string;
   diners_count: number;
   user_name: string;
@@ -112,6 +114,34 @@ export interface OrderListItem {
   items_count: number;
   created_at: string;
   duration_hours: number;
+  order_items: Array<{
+    id: string;
+    order_id: string;
+    product_id: string;
+    product_name: string;
+    product_short_name: string;
+    quantity: number;
+    unit_price: string;
+    variants_snapshot: string;
+    variants_total: string;
+    line_total: string;
+    status: string;
+    area_preparacion: string;
+    sent_to_kitchen_at?: string;
+    printed_at: string | null;
+    printer_id: string | null;
+    notes?: string;
+    is_cancelled: boolean;
+    cancelled_at: string | null;
+    cancelled_by: string | null;
+    cancel_reason: string | null;
+    is_paid: boolean;
+    paid_at: string | null;
+    payment_id: string | null;
+    created_by: string;
+    created_at: string;
+    updated_at: string;
+  }>;
 }
 
 // ============================================
@@ -331,3 +361,8 @@ export interface SendToKitchenRequest {
   order_id: string;
   item_ids: string[];
 }
+
+// export interface SendToKitchenRequest {
+//   order_id: string;
+//   items: OrderItem[];
+// }

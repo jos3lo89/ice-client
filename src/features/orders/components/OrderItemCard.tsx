@@ -109,8 +109,6 @@ export default function OrderItemCard({
               </div>
             )}
 
-            {/* <pre>{item.variants_snapshot}</pre> */}
-
             {/* Notas */}
             {item.notes && (
               <p className="text-sm italic text-muted-foreground">

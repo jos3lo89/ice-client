@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { TableStatus } from "@/types/table.types";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
@@ -29,10 +29,10 @@ export default function TableCard({ table, onClick }: TableCardProps) {
       </CardHeader>
 
       <CardContent className="space-y-2">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        {/* <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Users className="h-4 w-4" />
           <span>{table.capacity} personas</span>
-        </div>
+        </div> */}
 
         {isOccupied && activeOrder && (
           <div className="space-y-2 rounded-md border bg-background p-3">

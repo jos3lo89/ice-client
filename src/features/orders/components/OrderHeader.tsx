@@ -38,6 +38,11 @@ const getStatusConfig = (status: OrderStatus) => {
       className: "",
       label: "Cancelada",
     },
+    [OrderStatus.EN_PAGO_DIVIDIDO]: {
+      variant: "secondary" as const,
+      className: "bg-purple-500 text-white",
+      label: "Pago Dividido",
+    },
   };
 
   return config[status] || config[OrderStatus.ABIERTA];

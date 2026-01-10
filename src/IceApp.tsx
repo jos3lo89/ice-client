@@ -15,7 +15,7 @@ const IceApp = () => {
           initialIsOpen={false}
           buttonPosition="bottom-right"
         />
-        <Toaster closeButton richColors position="top-center" />
+        <Toaster closeButton richColors position="bottom-center" />
       </QueryClientProvider>
     </ThemeProvider>
   );

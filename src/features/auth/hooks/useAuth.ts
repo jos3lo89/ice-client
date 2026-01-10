@@ -17,9 +17,6 @@ export const useAuth = () => {
       if (response.success && response.data.user) {
         setUser(response.data.user);
         setIsAuthenticated(true);
-        toast.success("¡Bienvenido!", {
-          description: `Hola ${response.data.user.name}`,
-        });
 
         const redirectPath = getRoleBasedRedirect(response.data.user.role);
         navigate(redirectPath, { replace: true });
@@ -39,9 +36,6 @@ export const useAuth = () => {
       if (response.success && response.data.user) {
         setUser(response.data.user);
         setIsAuthenticated(true);
-        toast.success("¡Acceso concedido!", {
-          description: `Hola ${response.data.user.name}`,
-        });
 
         const redirectPath = getRoleBasedRedirect(response.data.user.role);
         navigate(redirectPath, { replace: true });
@@ -61,9 +55,6 @@ export const useAuth = () => {
     onSuccess: () => {
       clearAuth();
       queryClient.clear();
-      toast.success("Sesión cerrada", {
-        description: "Hasta pronto",
-      });
       navigate("/login", { replace: true });
     },
     onError: () => {

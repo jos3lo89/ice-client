@@ -146,6 +146,7 @@ export const OrderStatus = {
   PARCIALMENTE_PAGADA: "PARCIALMENTE_PAGADA",
   PAGADA: "PAGADA",
   CANCELADA: "CANCELADA",
+  EN_PAGO_DIVIDIDO: "EN_PAGO_DIVIDIDO",
 } as const;
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];

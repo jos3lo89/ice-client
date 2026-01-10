@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { User } from "@/types/auth.types";
 
+const storageName = "auth-ice-client";
+
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
@@ -22,15 +24,18 @@ export const useAuthStore = create<AuthState>()(
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
       setIsLoading: (isLoading) => set({ isLoading }),
-      logout: () => set({ user: null, isAuthenticated: false }),
+      logout: () => {
+        set({ user: null, isAuthenticated: false });
+        localStorage.removeItem(storageName);
+      },
     }),
     {
-      name: "auth-storage-ice-client",
+      name: storageName,
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
       storage: createJSONStorage(() => localStorage),
-    },
-  ),
+    }
+  )
 );

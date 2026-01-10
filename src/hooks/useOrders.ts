@@ -32,7 +32,7 @@ export const useOrders = () => {
   const listActiveOrdersQuery = useQuery({
     queryKey: queryKeys.orders,
     queryFn: ordersApi.listActiveOrders,
-    staleTime: 1000 * 15, // 15 segundos
+    staleTime: 1000 * 15,
   });
 
   // Obtener orden por ID
@@ -67,11 +67,8 @@ export const useOrders = () => {
   // Crear orden
   const createOrderMutation = useMutation({
     mutationFn: (values: CreateOrderRequest) => ordersApi.createOrder(values),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.orders });
-      queryClient.invalidateQueries({ queryKey: queryKeys.myOrders });
-      queryClient.invalidateQueries({ queryKey: ["tables"] }); // Refresh tables
-      toast.success(data.message);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["floors", "with-tables"] });
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
@@ -113,7 +110,7 @@ export const useOrders = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.order(variables.id),
       });
-      toast.success("Orden cerrada y lista para cobrar");
+      toast.success("Orden cerrada");
     },
     onError: (error: AxiosError<{ message?: string }>) => {
       toast.error("Error al cerrar orden", {
@@ -122,6 +119,7 @@ export const useOrders = () => {
     },
   });
 
+  // TODO: verficar funcionamiento
   // Cancelar orden
   const cancelOrderMutation = useMutation({
     mutationFn: ({ id, values }: { id: string; values: CancelOrderRequest }) =>
@@ -132,12 +130,22 @@ export const useOrders = () => {
         queryKey: queryKeys.order(variables.id),
       });
       queryClient.invalidateQueries({ queryKey: ["tables"] });
+      queryClient.invalidateQueries({
+        queryKey: ["cash-registers", "current"],
+      });
+
       toast.success("Orden cancelada");
     },
-    onError: (error: AxiosError<{ message?: string }>) => {
-      toast.error("Error al cancelar orden", {
-        description: error.response?.data?.message || "Intenta nuevamente",
-      });
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        toast.error("Error al cancelar orden", {
+          description: error.response?.data.message,
+        });
+      } else {
+        toast.error("Error al cancelar orden", {
+          description: "Intenta nuevamente",
+        });
+      }
     },
   });
 
@@ -150,12 +158,11 @@ export const useOrders = () => {
       orderId: string;
       values: AddOrderItemRequest;
     }) => orderItemsApi.addItem(orderId, values),
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.order(variables.orderId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.orders });
-      toast.success(data.message);
     },
     onError: (error: AxiosError<{ message?: string }>) => {
       toast.error("Error al agregar item", {
@@ -191,11 +198,10 @@ export const useOrders = () => {
   const sendToKitchenMutation = useMutation({
     mutationFn: (values: SendToKitchenRequest) =>
       orderItemsApi.sendToKitchen(values),
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.order(variables.order_id),
       });
-      toast.success(data.data.message);
     },
     onError: (error: AxiosError<{ message?: string }>) => {
       toast.error("Error al enviar a cocina", {
@@ -218,7 +224,6 @@ export const useOrders = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.order(variables.orderId),
       });
-      toast.success("Item cancelado");
     },
     onError: (error: AxiosError<{ message?: string }>) => {
       toast.error("Error al cancelar item", {
@@ -231,16 +236,22 @@ export const useOrders = () => {
   const deleteItemMutation = useMutation({
     mutationFn: ({ itemId }: { itemId: string; orderId: string }) =>
       orderItemsApi.deleteItem(itemId),
-    onSuccess: (data, variables) => {
+
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.order(variables.orderId),
       });
-      toast.success(data.message);
     },
-    onError: (error: AxiosError<{ message?: string }>) => {
-      toast.error("Error al eliminar item", {
-        description: error.response?.data?.message || "Intenta nuevamente",
-      });
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        toast.error("Error al eliminar item", {
+          description: error.response?.data.message,
+        });
+      } else {
+        toast.error("Error al eliminar item", {
+          description: "Intenta nuevamente",
+        });
+      }
     },
   });
 

@@ -23,9 +23,6 @@ export const productsApi = {
   // Listar todos los productos
   listProducts: async () => {
     const { data } = await axiosI.get<ListProductsResponse>("/products");
-    const { data: wadafa } = await axiosI.get("/products");
-    console.log(wadafa);
-
     return data;
   },
 
@@ -38,7 +35,7 @@ export const productsApi = {
   // Productos por categoría
   getProductsByCategory: async (categoryId: string) => {
     const { data } = await axiosI.get<ProductsByCategoryResponse>(
-      `/products/category/${categoryId}`,
+      `/products/category/${categoryId}`
     );
     return data;
   },
@@ -46,15 +43,16 @@ export const productsApi = {
   // Productos por área de preparación
   getProductsByArea: async (area: string) => {
     const { data } = await axiosI.get<ProductsByAreaResponse>(
-      `/products/area/${area}`,
+      `/products/area/${area}`
     );
     return data;
   },
 
   // Productos destacados
   getFeaturedProducts: async () => {
-    const { data } =
-      await axiosI.get<FeaturedProductsResponse>("/products/featured");
+    const { data } = await axiosI.get<FeaturedProductsResponse>(
+      "/products/featured"
+    );
     return data;
   },
 
@@ -62,7 +60,7 @@ export const productsApi = {
   createProduct: async (values: CreateProductRequest) => {
     const { data } = await axiosI.post<CreateProductResponse>(
       "/products",
-      values,
+      values
     );
     return data;
   },
@@ -71,7 +69,7 @@ export const productsApi = {
   updateProduct: async (id: string, values: UpdateProductRequest) => {
     const { data } = await axiosI.patch<UpdateProductResponse>(
       `/products/${id}`,
-      values,
+      values
     );
     return data;
   },
@@ -79,7 +77,7 @@ export const productsApi = {
   // Desactivar producto
   deactivateProduct: async (id: string) => {
     const { data } = await axiosI.delete<ToggleStateResponse>(
-      `/products/${id}/deactivate`,
+      `/products/${id}/deactivate`
     );
     return data;
   },
@@ -87,7 +85,7 @@ export const productsApi = {
   // Activar producto
   activateProduct: async (id: string) => {
     const { data } = await axiosI.delete<ToggleStateResponse>(
-      `/products/${id}/activate`,
+      `/products/${id}/activate`
     );
     return data;
   },
@@ -96,7 +94,7 @@ export const productsApi = {
   adjustStock: async (id: string, values: AdjustStockRequest) => {
     const { data } = await axiosI.patch<AdjustStockResponse>(
       `/products/${id}/stock`,
-      values,
+      values
     );
     return data;
   },
@@ -105,7 +103,7 @@ export const productsApi = {
   toggleAvailability: async (id: string, values: ToggleAvailabilityRequest) => {
     const { data } = await axiosI.patch<ToggleAvailabilityResponse>(
       `/products/${id}/toggle-availability`,
-      values,
+      values
     );
     return data;
   },
@@ -114,7 +112,7 @@ export const productsApi = {
   addVariantGroup: async (id: string, values: AddVariantGroupRequest) => {
     const { data } = await axiosI.post<AddVariantGroupResponse>(
       `/products/${id}/variants`,
-      values,
+      values
     );
     return data;
   },
@@ -122,7 +120,7 @@ export const productsApi = {
   // Eliminar grupo de variantes
   removeVariantGroup: async (productId: string, groupId: string) => {
     const { data } = await axiosI.delete<RemoveVariantGroupResponse>(
-      `/products/${productId}/variants/${groupId}`,
+      `/products/${productId}/variants/${groupId}`
     );
     return data;
   },

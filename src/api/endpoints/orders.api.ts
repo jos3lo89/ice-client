@@ -38,7 +38,7 @@ export const ordersApi = {
   // Orden activa de mesa
   getOrderByTable: async (tableId: string) => {
     const { data } = await axiosI.get<GetOrderByTableResponse>(
-      `/orders/table/${tableId}`,
+      `/orders/table/${tableId}`
     );
     return data;
   },
@@ -53,7 +53,7 @@ export const ordersApi = {
   updateOrder: async (id: string, values: UpdateOrderRequest) => {
     const { data } = await axiosI.patch<UpdateOrderResponse>(
       `/orders/${id}`,
-      values,
+      values
     );
     return data;
   },
@@ -62,7 +62,7 @@ export const ordersApi = {
   closeOrder: async (id: string, values?: CloseOrderRequest) => {
     const { data } = await axiosI.patch<CloseOrderResponse>(
       `/orders/${id}/close`,
-      values,
+      values
     );
     return data;
   },
@@ -71,7 +71,7 @@ export const ordersApi = {
   cancelOrder: async (id: string, values: CancelOrderRequest) => {
     const { data } = await axiosI.patch<CancelOrderResponse>(
       `/orders/${id}/cancel`,
-      values,
+      values
     );
     return data;
   },
